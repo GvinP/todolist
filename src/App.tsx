@@ -28,8 +28,8 @@ function App() {
             ]
     });
     let [todolists, setTodolists] = useState<TodolistType>([
-        {id: todolistId1, title: "What to learn", filter: "all"},
-        {id: todolistId2, title: "What to buy", filter: "completed"}
+        {id: todolistId1, title: "What to learn ", filter: "all"},
+        {id: todolistId2, title: "What to buy ", filter: "completed"}
     ])
 
     function removeTask(id: string, todolistId: string) {
@@ -57,7 +57,12 @@ function App() {
             todolist.filter = value
             setTodolists([...todolists])
         }
+    }
 
+    function removeTodolist(id: string) {
+        setTodolists(todolists.filter(tl => tl.id !== id))
+        delete tasks[id]
+        setTasks({...tasks})
     }
 
 
@@ -81,6 +86,7 @@ function App() {
                                  addTask={addTask}
                                  changeTaskStatus={changeStatus}
                                  filter={tl.filter}
+                                 removeTodolist={removeTodolist}
                 />
             })}
 
