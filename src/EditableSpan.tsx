@@ -3,6 +3,7 @@ import React, {ChangeEvent, useState} from "react";
 type EditableSpanPropsType = {
     title: string
     onChange: (title: string)=> void
+    className?: string
 }
 
 export function EditableSpan(props: EditableSpanPropsType) {
@@ -20,5 +21,5 @@ export function EditableSpan(props: EditableSpanPropsType) {
     return editMode ?
         <input value={title} onBlur={onClickViewModeHandler}
                onChange={onChangeHandler} autoFocus/>
-        : <span onDoubleClick={onClickEditModeHandler}>{props.title}</span>
+        : <span onDoubleClick={onClickEditModeHandler} className={props.className}>{props.title}</span>
 }

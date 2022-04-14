@@ -2,6 +2,9 @@ import React, {ChangeEvent} from 'react';
 import {FilterValuesType, TaskType} from './App';
 import {AddItemForm} from "./AddItemForm";
 import {EditableSpan} from "./EditableSpan";
+import {Button, ButtonGroup, Checkbox, IconButton, List, ListItem} from "@material-ui/core";
+import {DeleteOutline} from "@material-ui/icons";
+
 
 type PropsType = {
     title: string
@@ -25,15 +28,17 @@ export function Todolist(props: PropsType) {
     const onActiveClickHandler = () => props.changeFilter(props.todolistId, "active");
     const onCompletedClickHandler = () => props.changeFilter(props.todolistId, "completed")
     const changeTodolistTitle = (title: string) => {
-      props.changeTodolistTitle(props.todolistId, title)
+        props.changeTodolistTitle(props.todolistId, title)
     }
 
     return <div>
         <h3><EditableSpan title={props.title} onChange={changeTodolistTitle}/>
-            <button onClick={() => props.removeTodolist(props.todolistId)}>X</button>
+            <IconButton onClick={() => props.removeTodolist(props.todolistId)} size={"small"}>
+                <DeleteOutline/>
+            </IconButton>
         </h3>
         <AddItemForm addItem={addTask}/>
-        <ul>
+        <List>
             {
                 props.tasks.map(t => {
                     const onClickHandler = () => props.removeTask(props.todolistId, t.id)
@@ -44,27 +49,36 @@ export function Todolist(props: PropsType) {
                         props.changeTaskTitle(props.todolistId, t.id, title);
                     }
 
-                    return <li key={t.id} className={t.isDone ? "is-done" : ""}>
-                        <input type="checkbox"
-                               onChange={onChangeHandler}
-                               checked={t.isDone}/>
-                        <EditableSpan title={t.title} onChange={onChangeTaskTitleHandler}/>
-                        <button onClick={onClickHandler}>x</button>
-                    </li>
+                    return <ListItem key={t.id} style={{padding: '0', justifyContent: 'space-between'}}>
+                        <Checkbox size={"small"}
+                                  color={"primary"}
+                                  onChange={onChangeHandler} checked={t.isDone}/>
+                        <EditableSpan title={t.title} onChange={onChangeTaskTitleHandler}
+                                      className={t.isDone ? "is-done" : ""}/>
+                        <IconButton onClick={onClickHandler} size={"small"}>
+                            <DeleteOutline/>
+                        </IconButton>
+                    </ListItem>
                 })
             }
-        </ul>
-        <div>
-            <button className={props.filter === 'all' ? "active-filter" : ""}
-                    onClick={onAllClickHandler}>All
-            </button>
-            <button className={props.filter === 'active' ? "active-filter" : ""}
-                    onClick={onActiveClickHandler}>Active
-            </button>
-            <button className={props.filter === 'completed' ? "active-filter" : ""}
-                    onClick={onCompletedClickHandler}>Completed
-            </button>
-        </div>
+        </List>
+        <ButtonGroup size={"small"} variant={"contained"}>
+            <Button
+                color={props.filter === 'all' ? "secondary" : "primary"}
+                className={props.filter === 'all' ? "active-filter" : ""}
+                onClick={onAllClickHandler}>All
+            </Button>
+            <Button
+                color={props.filter === 'active' ? "secondary" : "primary"}
+                className={props.filter === 'active' ? "active-filter" : ""}
+                onClick={onActiveClickHandler}>Active
+            </Button>
+            <Button
+                color={props.filter === 'completed' ? "secondary" : "primary"}
+                className={props.filter === 'completed' ? "active-filter" : ""}
+                onClick={onCompletedClickHandler}>Completed
+            </Button>
+        </ButtonGroup>
     </div>
 }
 
