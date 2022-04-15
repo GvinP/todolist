@@ -5,7 +5,13 @@ import {v1} from 'uuid';
 import {AddItemForm} from "./AddItemForm";
 import {AppBar, IconButton, Paper, Toolbar, Typography, Button, Grid, GridList} from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
-import {addTodolistAC, changeFilterAC, changeTodolistTitleAC, todolistReducer} from "./reducers/todolistReducer";
+import {
+    addTodolistAC,
+    changeFilterAC,
+    changeTodolistTitleAC,
+    removeTodolistAC,
+    todolistReducer
+} from "./reducers/todolistReducer";
 import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, taskReducer} from "./reducers/taskReducer";
 
 export type TaskType = {
@@ -62,8 +68,7 @@ function App() {
     function addTodolist(title: string) {
         const newTodolistID = v1()
         setTodolists(todolistReducer(todolists, addTodolistAC(newTodolistID, title)))
-        setTasks({...tasks, [newTodolistID]: []})
-
+        setTasks(taskReducer(tasks, addTodolistAC(newTodolistID, title)))
     }
 
     function changeStatus(todolistId: string, taskId: string, isDone: boolean) {
@@ -83,10 +88,8 @@ function App() {
     }
 
     function removeTodolist(todolistId: string) {
-        setTodolists(todolists.filter(el => el.id !== todolistId))
-        const copyTasks = {...tasks}
-        delete copyTasks[todolistId]
-        setTasks(copyTasks)
+        setTodolists(todolistReducer(todolists, removeTodolistAC(todolistId)))
+        setTasks(taskReducer(tasks, removeTodolistAC(todolistId)))
     }
 
     let mappedTodolists = todolists.map(el => {
