@@ -1,4 +1,5 @@
 import {FilterValuesType, TodolistType} from "../App";
+import {todolistId1, todolistId2} from "./taskReducer";
 
 export const ADD_TODOLIST = 'ADD-TODOLIST'
 export const REMOVE_TODOLIST = 'REMOVE-TODOLIST'
@@ -58,8 +59,12 @@ export const changeFilterAC = (todolistId: string, value: FilterValuesType):chan
         value: value
     }
 }
+const todolistsInitialState: Array<TodolistType> = [
+    {id: todolistId1, title: "What to learn", filter: 'all'},
+    {id: todolistId2, title: "What to buy", filter: 'all'}
+]
 
-export const todolistReducer = (state: Array<TodolistType>, action: allActionsType): Array<TodolistType> => {
+export const todolistReducer = (state= todolistsInitialState, action: allActionsType): Array<TodolistType> => {
     switch (action.type) {
         case ADD_TODOLIST:
             const newTodolist= {id: action.newTodolistId, title: action.title, filter: 'all' as FilterValuesType};

@@ -31,38 +31,40 @@ export function Todolist(props: PropsType) {
         props.changeTodolistTitle(props.todolistId, title)
     }
 
-    return <div>
-        <h3><EditableSpan title={props.title} onChange={changeTodolistTitle}/>
-            <IconButton onClick={() => props.removeTodolist(props.todolistId)} size={"small"}>
-                <DeleteOutline/>
-            </IconButton>
-        </h3>
-        <AddItemForm addItem={addTask}/>
-        <List>
-            {
-                props.tasks.map(t => {
-                    const onClickHandler = () => props.removeTask(props.todolistId, t.id)
-                    const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-                        props.changeTaskStatus(props.todolistId, t.id, e.currentTarget.checked);
-                    }
-                    const onChangeTaskTitleHandler = (title: string) => {
-                        props.changeTaskTitle(props.todolistId, t.id, title);
-                    }
+    return <div style={{minHeight: "350px", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+        <div>
+            <h3><EditableSpan title={props.title} onChange={changeTodolistTitle}/>
+                <IconButton onClick={() => props.removeTodolist(props.todolistId)} size={"small"}>
+                    <DeleteOutline/>
+                </IconButton>
+            </h3>
+            <AddItemForm addItem={addTask}/>
+            <List>
+                {
+                    props.tasks.map(t => {
+                        const onClickHandler = () => props.removeTask(props.todolistId, t.id)
+                        const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+                            props.changeTaskStatus(props.todolistId, t.id, e.currentTarget.checked);
+                        }
+                        const onChangeTaskTitleHandler = (title: string) => {
+                            props.changeTaskTitle(props.todolistId, t.id, title);
+                        }
 
-                    return <ListItem key={t.id} style={{padding: '0', justifyContent: 'space-between'}}>
-                        <Checkbox size={"small"}
-                                  color={"primary"}
-                                  onChange={onChangeHandler} checked={t.isDone}/>
-                        <EditableSpan title={t.title} onChange={onChangeTaskTitleHandler}
-                                      className={t.isDone ? "is-done" : ""}/>
-                        <IconButton onClick={onClickHandler} size={"small"}>
-                            <DeleteOutline/>
-                        </IconButton>
-                    </ListItem>
-                })
-            }
-        </List>
-        <ButtonGroup size={"small"} variant={"contained"}>
+                        return <ListItem key={t.id} style={{padding: '0', justifyContent: 'space-between'}}>
+                            <Checkbox size={"small"}
+                                      color={"primary"}
+                                      onChange={onChangeHandler} checked={t.isDone}/>
+                            <EditableSpan title={t.title} onChange={onChangeTaskTitleHandler}
+                                          className={t.isDone ? "is-done" : ""}/>
+                            <IconButton onClick={onClickHandler} size={"small"}>
+                                <DeleteOutline/>
+                            </IconButton>
+                        </ListItem>
+                    })
+                }
+            </List>
+        </div>
+        <ButtonGroup size={"small"} variant={"contained"} style={{margin: "0 auto 15px"}}>
             <Button
                 color={props.filter === 'all' ? "secondary" : "primary"}
                 className={props.filter === 'all' ? "active-filter" : ""}

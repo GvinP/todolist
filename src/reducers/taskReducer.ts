@@ -1,4 +1,4 @@
-import {TasksType} from "../App";
+import {TasksType, TodolistType} from "../App";
 import {v1} from "uuid";
 import {ADD_TODOLIST, addTodolistActionType, REMOVE_TODOLIST, removeTodolistActionType} from "./todolistReducer";
 
@@ -67,8 +67,25 @@ export const changeTaskStatusAC = (todolistId: string, taskId: string, isDone: b
         isDone: isDone
     }
 }
+export const todolistId1 = v1()
+export const todolistId2 = v1()
 
-export const taskReducer = (state: TasksType, action: allActionsType): TasksType => {
+const tasksInitialState: TasksType = {
+    [todolistId1]: [
+        {id: v1(), title: "HTML&CSS", isDone: true},
+        {id: v1(), title: "JS", isDone: true},
+        {id: v1(), title: "ReactJS", isDone: false},
+        {id: v1(), title: "Rest API", isDone: false},
+        {id: v1(), title: "GraphQL", isDone: false},
+    ],
+    [todolistId2]: [
+        {id: v1(), title: "Chicken", isDone: true},
+        {id: v1(), title: "Apples", isDone: true},
+        {id: v1(), title: "Oranges", isDone: false}
+    ]
+}
+
+export const taskReducer = (state = tasksInitialState, action: allActionsType): TasksType => {
     switch (action.type) {
         case ADD_TASK:
             const newTask = {id: v1(), title: action.title, isDone: false};
@@ -76,14 +93,16 @@ export const taskReducer = (state: TasksType, action: allActionsType): TasksType
         case REMOVE_TASK:
             return {...state, [action.todolistId]: state[action.todolistId].filter(el => el.id !== action.taskId)}
         case CHANGE_TASK_TITLE:
-            return {...state,
+            return {
+                ...state,
                 [action.todolistId]: state[action.todolistId].map(el => el.id === action.taskId ? {
                     ...el,
                     title: action.title
                 } : el)
             }
         case CHANGE_TASK_STATUS:
-            return {...state,
+            return {
+                ...state,
                 [action.todolistId]: state[action.todolistId].map(el => el.id === action.taskId ? {
                     ...el,
                     isDone: action.isDone
