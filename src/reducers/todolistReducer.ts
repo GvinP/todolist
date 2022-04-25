@@ -1,5 +1,6 @@
 import {FilterValuesType, TodolistType} from "../App";
 import {todolistId1, todolistId2} from "./taskReducer";
+import {v1} from "uuid";
 
 export const ADD_TODOLIST = 'ADD-TODOLIST'
 export const REMOVE_TODOLIST = 'REMOVE-TODOLIST'
@@ -32,7 +33,8 @@ type changeFilterActionType = {
     todolistId: string
     value: FilterValuesType
 }
-export const addTodolistAC = (newTodolistId: string, title: string):addTodolistActionType => {
+export const addTodolistAC = (title: string):addTodolistActionType => {
+    const newTodolistId = v1()
     return {
         type: ADD_TODOLIST,
         newTodolistId: newTodolistId,
@@ -60,8 +62,8 @@ export const changeFilterAC = (todolistId: string, value: FilterValuesType):chan
     }
 }
 const todolistsInitialState: Array<TodolistType> = [
-    {id: todolistId1, title: "What to learn", filter: 'all'},
-    {id: todolistId2, title: "What to buy", filter: 'all'}
+    // {id: todolistId1, title: "What to learn", filter: 'all'},
+    // {id: todolistId2, title: "What to buy", filter: 'all'}
 ]
 
 export const todolistReducer = (state= todolistsInitialState, action: allActionsType): Array<TodolistType> => {

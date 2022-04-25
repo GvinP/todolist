@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import './App.css';
 import {Todolist} from './Todolist';
-import {v1} from 'uuid';
 import {AddItemForm} from "./AddItemForm";
 import {AppBar, Button, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
@@ -28,63 +27,52 @@ export type TasksType = {
 }
 
 function App() {
-
+    console.log('App')
     const dispatch = useDispatch()
     const tasks = useSelector<AppStateType, TasksType>(state => state.tasks)
     const todolists = useSelector<AppStateType, Array<TodolistType>>(state => state.todolists)
 
 
-    function removeTask(todolistId: string, id: string) {
+    const removeTask = useCallback((todolistId: string, id: string) => {
         dispatch(removeTaskAC(todolistId, id))
-    }
+    }, [dispatch])
 
-    function addTask(todolistId: string, title: string) {
+    const addTask = useCallback((todolistId: string, title: string) => {
         dispatch(addTaskAC(todolistId, title))
-    }
+    }, [dispatch])
 
-    function addTodolist(title: string) {
-        const newTodolistID = v1()
-        const action = addTodolistAC(newTodolistID, title)
-        dispatch(action)
-    }
+    const addTodolist = useCallback((title: string) => {
+        dispatch(addTodolistAC(title))
+    }, [dispatch])
 
-    function changeStatus(todolistId: string, taskId: string, isDone: boolean) {
+    const changeStatus = useCallback((todolistId: string, taskId: string, isDone: boolean) => {
         dispatch(changeTaskStatusAC(todolistId, taskId, isDone))
-    }
+    }, [dispatch])
 
-    function changeTaskTitle(todolistId: string, taskId: string, title: string) {
+    const changeTaskTitle = useCallback((todolistId: string, taskId: string, title: string) => {
         dispatch(changeTaskTitleAC(todolistId, taskId, title))
-    }
+    }, [dispatch])
 
-    function changeTodolistTitle(todolistId: string, title: string) {
+    const changeTodolistTitle = useCallback((todolistId: string, title: string) => {
         dispatch(changeTodolistTitleAC(todolistId, title))
-    }
+    }, [dispatch])
 
-    function changeFilter(todolistId: string, value: FilterValuesType) {
+    const changeFilter = useCallback((todolistId: string, value: FilterValuesType) => {
         dispatch(changeFilterAC(todolistId, value))
-    }
+    }, [dispatch])
 
-    function removeTodolist(todolistId: string) {
-        const action = removeTodolistAC(todolistId)
-        dispatch(action)
-    }
+    const removeTodolist = useCallback((todolistId: string) => {
+        dispatch(removeTodolistAC(todolistId))
+    }, [dispatch])
 
     let mappedTodolists = todolists.map(el => {
-        let tasksForTodolist = tasks[el.id];
-
-        if (el.filter === "active") {
-            tasksForTodolist = tasks[el.id].filter(t => !t.isDone);
-        }
-        if (el.filter === "completed") {
-            tasksForTodolist = tasks[el.id].filter(t => t.isDone);
-        }
-        return <Grid item xs={2}>
-            <Paper elevation={8} style={{textAlign: "center"}}>
+        return <Grid item xs={3}>
+            <Paper elevation={8} style={{minWidth: "230px", textAlign: "center"}}>
                 <Todolist
                     key={el.id}
                     todolistId={el.id}
                     title={el.title}
-                    tasks={tasksForTodolist}
+                    tasks={tasks[el.id]}
                     removeTask={removeTask}
                     changeFilter={changeFilter}
                     addTask={addTask}
@@ -100,16 +88,17 @@ function App() {
     return (
         <>
             <AppBar position="static">
-                <Toolbar style={{justifyContent: "space-between"}}>
+                <Toolbar>
                     <IconButton edge="start" color="inherit" aria-label="menu">
                         <Menu/>
                     </IconButton>
                     <Typography variant="h6">
-                        <AddItemForm addItem={addTodolist}/>
+                        News
                     </Typography>
-                    <Button color="inherit" variant={"outlined"}>Login</Button>
+                    <Button color="inherit" variant={"outlined"} style={{marginLeft: '15px'}}>Login</Button>
                 </Toolbar>
             </AppBar>
+            <AddItemForm addItem={addTodolist}/>
             <Grid container spacing={3} style={{marginTop: "20px"}}>
                 {mappedTodolists}
             </Grid>

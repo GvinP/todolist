@@ -13,7 +13,6 @@ import {taskReducer} from "./taskReducer";
 test('todolist reducer should add new todolist', ()=>{
     const todolistId1 = v1()
     const todolistId2 = v1()
-    const todolistId3 = v1()
 
     const startTodolistState: Array<TodolistType> = [
         {id: todolistId1, title: "What to learn", filter: 'all'},
@@ -29,14 +28,13 @@ test('todolist reducer should add new todolist', ()=>{
             {id: v1(), title: "JS2", isDone: true}
         ]
     }
-    const endTodolistState = todolistReducer(startTodolistState, addTodolistAC(todolistId3,'What to write'))
-    const endTaskState = taskReducer(startTaskState, addTodolistAC(todolistId3,'What to write'))
+    const endTodolistState = todolistReducer(startTodolistState, addTodolistAC('What to write'))
+    const endTaskState = taskReducer(startTaskState, addTodolistAC('What to write'))
     let key = Object.keys(endTaskState)
 
     expect(endTodolistState[0].title).toBe('What to write')
     expect(endTodolistState.length).toBe(3)
     expect(key.length).toBe(3)
-    expect(endTaskState[todolistId3]).toBeDefined()
 })
 
 test('todolist reducer should change todolist title', ()=>{
