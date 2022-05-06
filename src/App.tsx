@@ -1,56 +1,63 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import './App.css';
 import {Todolist} from './Todolist';
 import {AddItemForm} from "./AddItemForm";
-import {AppBar, Button, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
+import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
-import {addTodolistAC, changeFilterAC, changeTodolistTitleAC, removeTodolistAC} from "./reducers/todolistReducer";
-import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC} from "./reducers/taskReducer";
+import {
+    addTodolistsTC,
+    changeFilterAC,
+    changeTodolistTitleAC,
+    getTodolistsTC,
+    removeTodolistsTC,
+    TodolistType
+} from "./redux/todolistReducer";
+import {addTaskTC, changeTaskStatusTC, changeTaskTitleTC, removeTaskTC, TasksType, TaskType} from "./redux/taskReducer";
 import {useDispatch, useSelector} from "react-redux";
-import {AppStateType} from "./store";
+import {AppStateType} from "./redux/store";
 
-export type TaskType = {
-    id: string
-    title: string
-    isDone: boolean
-}
-
-export type TodolistType = {
-    id: string
-    title: string
-    filter: FilterValuesType
-}
 export type FilterValuesType = "all" | "active" | "completed";
 
-export type TasksType = {
-    [key: string]: Array<TaskType>
-}
 
 function App() {
-    console.log('App')
+    // console.log('App')
     const dispatch = useDispatch()
     const tasks = useSelector<AppStateType, TasksType>(state => state.tasks)
     const todolists = useSelector<AppStateType, Array<TodolistType>>(state => state.todolists)
 
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(getTodolistsTC())
+    }, [dispatch])
 
     const removeTask = useCallback((todolistId: string, id: string) => {
-        dispatch(removeTaskAC(todolistId, id))
+        //@ts-ignore
+        dispatch(removeTaskTC(todolistId, id))
+        // dispatch(removeTaskAC(todolistId, id))
     }, [dispatch])
 
     const addTask = useCallback((todolistId: string, title: string) => {
-        dispatch(addTaskAC(todolistId, title))
+        // @ts-ignore
+        dispatch(addTaskTC(todolistId, title))
+        // dispatch(addTaskAC(todolistId, title))
     }, [dispatch])
 
     const addTodolist = useCallback((title: string) => {
-        dispatch(addTodolistAC(title))
+        // @ts-ignore
+        dispatch(addTodolistsTC(title))
+        // dispatch(addTodolistAC(title))
     }, [dispatch])
 
-    const changeStatus = useCallback((todolistId: string, taskId: string, isDone: boolean) => {
-        dispatch(changeTaskStatusAC(todolistId, taskId, isDone))
+    const changeStatus = useCallback((todolistId: string, task: TaskType, status: number) => {
+        // @ts-ignore
+        dispatch(changeTaskStatusTC(todolistId, task, status))
+        // dispatch(changeTaskStatusAC(todolistId, task, status))
     }, [dispatch])
 
-    const changeTaskTitle = useCallback((todolistId: string, taskId: string, title: string) => {
-        dispatch(changeTaskTitleAC(todolistId, taskId, title))
+    const changeTaskTitle = useCallback((todolistId: string, task: TaskType, title: string) => {
+        // @ts-ignore
+        dispatch(changeTaskTitleTC(todolistId, task, title))
+        // dispatch(changeTaskTitleAC(todolistId, taskId, title))
     }, [dispatch])
 
     const changeTodolistTitle = useCallback((todolistId: string, title: string) => {
@@ -62,11 +69,14 @@ function App() {
     }, [dispatch])
 
     const removeTodolist = useCallback((todolistId: string) => {
-        dispatch(removeTodolistAC(todolistId))
+
+        // @ts-ignore
+        dispatch(removeTodolistsTC(todolistId))
+        // dispatch(removeTodolistAC(todolistId))
     }, [dispatch])
 
     let mappedTodolists = todolists.map(el => {
-        return <Grid item xs={3}>
+        return <Grid item key={el.id}>
             <Paper elevation={8} style={{minWidth: "230px", textAlign: "center"}}>
                 <Todolist
                     key={el.id}
@@ -88,21 +98,24 @@ function App() {
     return (
         <>
             <AppBar position="static">
-                <Toolbar>
+                <Toolbar style={{justifyContent: 'space-between'}}>
                     <IconButton edge="start" color="inherit" aria-label="menu">
                         <Menu/>
                     </IconButton>
                     <Typography variant="h6">
-                        News
+                        TodoList
                     </Typography>
                     <Button color="inherit" variant={"outlined"} style={{marginLeft: '15px'}}>Login</Button>
                 </Toolbar>
             </AppBar>
-            <AddItemForm addItem={addTodolist}/>
-            <Grid container spacing={3} style={{marginTop: "20px"}}>
-                {mappedTodolists}
-            </Grid>
-
+            <Container fixed>   {/* fixed - фиксированная ширина*/}
+                <Grid container style={{padding: "20px 0"}}>   {/* это 1 ряд*/}
+                    <AddItemForm addItem={addTodolist}/>
+                </Grid>
+                <Grid container spacing={3}>   {/* это 2 ряд*/}
+                    {mappedTodolists}
+                </Grid>
+            </Container>
         </>
     );
 }
