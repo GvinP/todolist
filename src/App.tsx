@@ -14,50 +14,39 @@ import {
 } from "./redux/todolistReducer";
 import {addTaskTC, changeTaskStatusTC, changeTaskTitleTC, removeTaskTC, TasksType, TaskType} from "./redux/taskReducer";
 import {useDispatch, useSelector} from "react-redux";
-import {AppStateType} from "./redux/store";
+import {AppStateType, TypedDispatch} from "./redux/store";
 
 export type FilterValuesType = "all" | "active" | "completed";
 
 
 function App() {
     // console.log('App')
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<TypedDispatch>()
     const tasks = useSelector<AppStateType, TasksType>(state => state.tasks)
     const todolists = useSelector<AppStateType, Array<TodolistType>>(state => state.todolists)
 
     useEffect(() => {
-        // @ts-ignore
         dispatch(getTodolistsTC())
     }, [dispatch])
 
     const removeTask = useCallback((todolistId: string, id: string) => {
-        //@ts-ignore
         dispatch(removeTaskTC(todolistId, id))
-        // dispatch(removeTaskAC(todolistId, id))
     }, [dispatch])
 
     const addTask = useCallback((todolistId: string, title: string) => {
-        // @ts-ignore
         dispatch(addTaskTC(todolistId, title))
-        // dispatch(addTaskAC(todolistId, title))
     }, [dispatch])
 
     const addTodolist = useCallback((title: string) => {
-        // @ts-ignore
         dispatch(addTodolistsTC(title))
-        // dispatch(addTodolistAC(title))
     }, [dispatch])
 
     const changeStatus = useCallback((todolistId: string, task: TaskType, status: number) => {
-        // @ts-ignore
         dispatch(changeTaskStatusTC(todolistId, task, status))
-        // dispatch(changeTaskStatusAC(todolistId, task, status))
     }, [dispatch])
 
     const changeTaskTitle = useCallback((todolistId: string, task: TaskType, title: string) => {
-        // @ts-ignore
         dispatch(changeTaskTitleTC(todolistId, task, title))
-        // dispatch(changeTaskTitleAC(todolistId, taskId, title))
     }, [dispatch])
 
     const changeTodolistTitle = useCallback((todolistId: string, title: string) => {
@@ -69,10 +58,7 @@ function App() {
     }, [dispatch])
 
     const removeTodolist = useCallback((todolistId: string) => {
-
-        // @ts-ignore
         dispatch(removeTodolistsTC(todolistId))
-        // dispatch(removeTodolistAC(todolistId))
     }, [dispatch])
 
     let mappedTodolists = todolists.map(el => {
