@@ -23,7 +23,7 @@ export type TodolistType = {
 
 export type addTodolistActionType = {
     type: 'ADD-TODOLIST'
-    newTodolistId: string
+    todolistId: string
     title: string
 }
 export type setTodolistActionType = {
@@ -45,12 +45,11 @@ type changeFilterActionType = {
     value: FilterValuesType
 }
 
-export const addTodolistAC = (title: string): addTodolistActionType => {
-    const newTodolistId = v1()
+export const addTodolistAC = (todolistId: string, title: string): addTodolistActionType => {
     return {
         type: ADD_TODOLIST,
-        newTodolistId: newTodolistId,
-        title: title
+        todolistId,
+        title
     }
 }
 export const removeTodolistAC = (todolistId: string): removeTodolistActionType => {
@@ -97,7 +96,7 @@ export const addTodolistsTC = (title: string) => (dispatch: Dispatch) => {
             'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
         }
     }).then(response => {
-        dispatch(addTodolistAC(response.data.data.item.title))
+        dispatch(addTodolistAC(response.data.data.item.id, response.data.data.item.title))
     })
 }
 export const removeTodolistsTC = (id: string) => (dispatch: Dispatch) => {
@@ -122,7 +121,7 @@ export const todolistReducer = (state = todolistsInitialState, action: allAction
             const todolists = action.todolists.map(el => ({...el, filter: 'all'}))
             return [...state, ...todolists]
         case ADD_TODOLIST:
-            const newTodolist = {id: action.newTodolistId, title: action.title, filter: 'all' as FilterValuesType};
+            const newTodolist = {id: action.todolistId, title: action.title, filter: 'all' as FilterValuesType};
             return [newTodolist, ...state]
         case CHANGE_TODOLIST_TITLE:
             return state.map(el => el.id === action.todolistId ? {...el, title: action.title} : el)

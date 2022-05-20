@@ -4,10 +4,11 @@ import {
     REMOVE_TODOLIST,
     removeTodolistActionType,
     SET_TODOLISTS,
-    setTodolistActionType
+    setTodolistActionType, TodolistType
 } from "./todolistReducer";
 import {Dispatch} from "redux";
 import axios from "axios";
+
 
 const ADD_TASK = 'ADD-TASK'
 const SET_TASKS = 'SET-TASKS'
@@ -103,13 +104,13 @@ export const changeTaskStatusAC = (todolistId: string, task: TaskType, status: n
 }
 
 export const getTasksTC = (todolistId: string) => (dispatch: Dispatch) => {
+
     axios.get(`https://social-network.samuraijs.com/api/1.1/todo-lists/${todolistId}/tasks`, {
         withCredentials: true,
         headers: {
             'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
         }
     }).then(response => {
-
         dispatch(setTasksAC(todolistId, response.data.items))
     })
 }
@@ -121,7 +122,6 @@ export const addTaskTC = (todolistId: string, title: string) => (dispatch: Dispa
             'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
         }
     }).then(response => {
-
         dispatch(addTaskAC(todolistId, response.data.data.item))
     })
 }
@@ -133,7 +133,6 @@ export const removeTaskTC = (todolistId: string, taskId: string) => (dispatch: D
             'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
         }
     }).then(response => {
-
         if (response.data.resultCode === 0)
             dispatch(removeTaskAC(todolistId, taskId))
     })
@@ -179,10 +178,15 @@ export const taskReducer = (state = tasksInitialState, action: allActionsType): 
             return {...state, [action.todolistId]: [action.task, ...state[action.todolistId]]}
         case SET_TASKS:
             return {...state, [action.todolistId]: action.tasks}
+        // case SET_TODOLISTS:
+        //     let keys = action.todolists.map(el => el.id)
+        //     return keys.reduce((acc: TasksType, el: string) => {
+        //         acc[el] = []
+        //         return acc
+        //     }, {})
         case SET_TODOLISTS:
-            let keys = action.todolists.map(el => el.id)
-            return keys.reduce((acc: TasksType, el: string) => {
-                acc[el] = []
+            return action.todolists.reduce((acc: TasksType, el: TodolistType) => {
+                acc[el.id] = []
                 return acc
             }, {})
         case REMOVE_TASK:
@@ -208,7 +212,7 @@ export const taskReducer = (state = tasksInitialState, action: allActionsType): 
             delete stateCopy[action.todolistId]
             return stateCopy
         case ADD_TODOLIST:
-            return {...state, [action.newTodolistId]: []}
+            return {...state, [action.todolistId]: []}
         default:
             return state
     }

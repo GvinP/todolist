@@ -23,3 +23,6 @@ export type TypedThunk<ReturnType = void> = ThunkAction<
     >;
 
 export default store;
+
+//@ts-ignore
+window.store = store
