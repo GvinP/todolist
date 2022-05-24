@@ -178,17 +178,8 @@ export const taskReducer = (state = tasksInitialState, action: allActionsType): 
             return {...state, [action.todolistId]: [action.task, ...state[action.todolistId]]}
         case SET_TASKS:
             return {...state, [action.todolistId]: action.tasks}
-        // case SET_TODOLISTS:
-        //     let keys = action.todolists.map(el => el.id)
-        //     return keys.reduce((acc: TasksType, el: string) => {
-        //         acc[el] = []
-        //         return acc
-        //     }, {})
         case SET_TODOLISTS:
-            return action.todolists.reduce((acc: TasksType, el: TodolistType) => {
-                acc[el.id] = []
-                return acc
-            }, {})
+            return action.todolists.reduce((acc: TasksType, el: TodolistType) => ({...acc, [el.id]:[]}), {})
         case REMOVE_TASK:
             return {...state, [action.todolistId]: state[action.todolistId].filter(el => el.id !== action.taskId)}
         case CHANGE_TASK_TITLE:
