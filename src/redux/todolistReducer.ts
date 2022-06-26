@@ -1,6 +1,6 @@
 import {FilterValuesType} from "../App";
 import {Dispatch} from "redux";
-import axios from 'axios'
+import {todolistsAPI, TodolistType} from "../api/todolist-api";
 
 export const ADD_TODOLIST = 'ADD-TODOLIST'
 export const SET_TODOLISTS = 'SET-TODOLISTS'
@@ -11,14 +11,9 @@ const CHANGE_FILTER = 'CHANGE-FILTER'
 type allActionsType = addTodolistActionType | changeTodolistTitleActionType
     | changeFilterActionType | removeTodolistActionType | setTodolistActionType
 
-export type TodolistType = {
-    id: string
-    addedDate: string
-    order: number
-    title: string
+export type TodolistDomainType = TodolistType & {
     filter: FilterValuesType
 }
-
 
 export type addTodolistActionType = {
     type: 'ADD-TODOLIST'
@@ -71,7 +66,6 @@ export const changeFilterAC = (todolistId: string, value: FilterValuesType): cha
         value: value
     }
 }
-
 export const setTodolistsAC = (todolists: Array<TodolistType>): setTodolistActionType => {
     return {
         type: SET_TODOLISTS,
@@ -79,32 +73,19 @@ export const setTodolistsAC = (todolists: Array<TodolistType>): setTodolistActio
     }
 }
 export const getTodolistsTC = () => (dispatch: Dispatch) => {
-    axios.get('https://social-network.samuraijs.com/api/1.1/todo-lists', {
-        withCredentials: true,
-        headers: {
-            'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
-        }
-    }).then(response => {
-        dispatch(setTodolistsAC(response.data))
-    })
+    todolistsAPI.getTodolists()
+        .then(response => {
+            dispatch(setTodolistsAC(response.data))
+        })
 }
 export const addTodolistsTC = (title: string) => (dispatch: Dispatch) => {
-    axios.post('https://social-network.samuraijs.com/api/1.1/todo-lists', {title}, {
-        withCredentials: true,
-        headers: {
-            'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
-        }
-    }).then(response => {
-        dispatch(addTodolistAC(response.data.data.item.id, response.data.data.item.title))
-    })
+    todolistsAPI.createTodolist(title)
+        .then(response => {
+            dispatch(addTodolistAC(response.data.data.item.id, response.data.data.item.title))
+        })
 }
 export const removeTodolistsTC = (id: string) => (dispatch: Dispatch) => {
-    axios.delete(`https://social-network.samuraijs.com/api/1.1/todo-lists/${id}`, {
-        withCredentials: true,
-        headers: {
-            'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
-        }
-    })
+    todolistsAPI.deleteTodolist(id)
         .then(response => {
             if (response.data.resultCode === 0) {
                 dispatch(removeTodolistAC(id))
@@ -112,7 +93,7 @@ export const removeTodolistsTC = (id: string) => (dispatch: Dispatch) => {
         })
 }
 
-const todolistsInitialState: Array<TodolistType> = []
+const todolistsInitialState: Array<TodolistDomainType> = []
 
 export const todolistReducer = (state = todolistsInitialState, action: allActionsType): any => {
     switch (action.type) {

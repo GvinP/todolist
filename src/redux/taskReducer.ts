@@ -4,38 +4,24 @@ import {
     REMOVE_TODOLIST,
     removeTodolistActionType,
     SET_TODOLISTS,
-    setTodolistActionType, TodolistType
+    setTodolistActionType
 } from "./todolistReducer";
 import {Dispatch} from "redux";
-import axios from "axios";
+import {TaskType, todolistsAPI, TodolistType, UpdateTaskModelType} from "../api/todolist-api";
 
 
 const ADD_TASK = 'ADD-TASK'
 const SET_TASKS = 'SET-TASKS'
 const REMOVE_TASK = 'REMOVE-TASK'
-const CHANGE_TASK_TITLE = 'CHANGE-TASK-TITLE'
+const CHANGE_TASK = 'CHANGE-TASK'
 const CHANGE_TASK_STATUS = 'CHANGE-TASK-STATUS'
-
-export type TaskType = {
-    addedDate: string
-    deadline: string
-    description: string
-    id: string
-    order: number
-    priority: number
-    startDate: string
-    status: number
-    title: string
-    todolist: string
-    todoListId: string
-}
 
 export type TasksType = {
     [key: string]: Array<TaskType>
 }
 
 type allActionsType = addTaskActionType | removeTaskActionType
-    | changeTaskTitleActionType | changeTaskStatusActionType
+    | changeTaskActionType | changeTaskStatusActionType
     | removeTodolistActionType | addTodolistActionType | setTasksActionType | setTodolistActionType
 
 type addTaskActionType = {
@@ -53,11 +39,11 @@ type removeTaskActionType = {
     todolistId: string
     taskId: string
 }
-type changeTaskTitleActionType = {
-    type: 'CHANGE-TASK-TITLE'
+type changeTaskActionType = {
+    type: 'CHANGE-TASK'
     todolistId: string
-    task: TaskType
-    title: string
+    taskId: string
+    model: UpdateTaskModelType
 }
 type changeTaskStatusActionType = {
     type: 'CHANGE-TASK-STATUS'
@@ -86,12 +72,12 @@ export const removeTaskAC = (todolistId: string, taskId: string): removeTaskActi
         taskId: taskId
     }
 }
-export const changeTaskTitleAC = (todolistId: string, task: TaskType, title: string): changeTaskTitleActionType => {
+export const changeTaskTitleAC = (todolistId: string, taskId: string, model: UpdateTaskModelType): changeTaskActionType => {
     return {
-        type: CHANGE_TASK_TITLE,
+        type: CHANGE_TASK,
         todolistId,
-        task,
-        title
+        taskId,
+        model
     }
 }
 export const changeTaskStatusAC = (todolistId: string, task: TaskType, status: number): changeTaskStatusActionType => {
@@ -104,70 +90,35 @@ export const changeTaskStatusAC = (todolistId: string, task: TaskType, status: n
 }
 
 export const getTasksTC = (todolistId: string) => (dispatch: Dispatch) => {
-
-    axios.get(`https://social-network.samuraijs.com/api/1.1/todo-lists/${todolistId}/tasks`, {
-        withCredentials: true,
-        headers: {
-            'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
-        }
-    }).then(response => {
-        dispatch(setTasksAC(todolistId, response.data.items))
-    })
+    todolistsAPI.getTasks(todolistId)
+        .then(response => {
+            dispatch(setTasksAC(todolistId, response.data.items))
+        })
 }
 
 export const addTaskTC = (todolistId: string, title: string) => (dispatch: Dispatch) => {
-    axios.post(`https://social-network.samuraijs.com/api/1.1/todo-lists/${todolistId}/tasks`, {title}, {
-        withCredentials: true,
-        headers: {
-            'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
-        }
-    }).then(response => {
-        dispatch(addTaskAC(todolistId, response.data.data.item))
-    })
+    todolistsAPI.createTask(todolistId, title)
+        .then(response => {
+            dispatch(addTaskAC(todolistId, response.data.data.item))
+        })
 }
 
 export const removeTaskTC = (todolistId: string, taskId: string) => (dispatch: Dispatch) => {
-    axios.delete(`https://social-network.samuraijs.com/api/1.1/todo-lists/${todolistId}/tasks/${taskId}`, {
-        withCredentials: true,
-        headers: {
-            'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
-        }
-    }).then(response => {
-        if (response.data.resultCode === 0)
-            dispatch(removeTaskAC(todolistId, taskId))
-    })
+    todolistsAPI.deleteTask(todolistId, taskId)
+        .then(response => {
+            if (response.data.resultCode === 0)
+                dispatch(removeTaskAC(todolistId, taskId))
+        })
 }
 
-export const changeTaskTitleTC = (todolistId: string, task: TaskType, title: string) => (dispatch: Dispatch) => {
-    axios.put(`https://social-network.samuraijs.com/api/1.1/todo-lists/${todolistId}/tasks/${task.id}`, {
-        ...task, title
-    }, {
-        withCredentials: true,
-        headers: {
-            'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
-        }
-    }).then(response => {
-        if (response.data.resultCode === 0) {
-            dispatch(changeTaskTitleAC(todolistId, task, title))
-        }
-    })
+export const changeTaskTC = (todolistId: string, taskId: string, model: UpdateTaskModelType) => (dispatch: Dispatch) => {
+    todolistsAPI.updateTask(todolistId, taskId, model)
+        .then(response => {
+            if (response.data.resultCode === 0) {
+                dispatch(changeTaskTitleAC(todolistId, taskId, model))
+            }
+        })
 }
-
-export const changeTaskStatusTC = (todolistId: string, task: TaskType, status: number) => (dispatch: Dispatch) => {
-    axios.put(`https://social-network.samuraijs.com/api/1.1/todo-lists/${todolistId}/tasks/${task.id}`, {
-        ...task, status
-    }, {
-        withCredentials: true,
-        headers: {
-            'API-KEY': 'e2b2d8ed-9e2a-4c10-8057-a81181e19d3c'
-        }
-    }).then(response => {
-        if (response.data.resultCode === 0) {
-            dispatch(changeTaskStatusAC(todolistId, task, status))
-        }
-    })
-}
-
 
 const tasksInitialState: TasksType = {}
 
@@ -179,23 +130,15 @@ export const taskReducer = (state = tasksInitialState, action: allActionsType): 
         case SET_TASKS:
             return {...state, [action.todolistId]: action.tasks}
         case SET_TODOLISTS:
-            return action.todolists.reduce((acc: TasksType, el: TodolistType) => ({...acc, [el.id]:[]}), {})
+            return action.todolists.reduce((acc: TasksType, el: TodolistType) => ({...acc, [el.id]: []}), {})
         case REMOVE_TASK:
             return {...state, [action.todolistId]: state[action.todolistId].filter(el => el.id !== action.taskId)}
-        case CHANGE_TASK_TITLE:
+        case CHANGE_TASK:
             return {
                 ...state,
-                [action.todolistId]: state[action.todolistId].map(el => el.id === action.task.id ? {
+                [action.todolistId]: state[action.todolistId].map(el => el.id === action.taskId ? {
                     ...el,
-                    title: action.title
-                } : el)
-            }
-        case CHANGE_TASK_STATUS:
-            return {
-                ...state,
-                [action.todolistId]: state[action.todolistId].map(el => el.id === action.task.id ? {
-                    ...el,
-                    status: action.status
+                    ...action.model
                 } : el)
             }
         case REMOVE_TODOLIST:

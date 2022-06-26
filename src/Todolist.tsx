@@ -6,7 +6,8 @@ import {Button, ButtonGroup, IconButton, List} from "@material-ui/core";
 import {DeleteOutline} from "@material-ui/icons";
 import {Task} from "./Task";
 import {useDispatch} from "react-redux";
-import {getTasksTC, TaskType} from "./redux/taskReducer";
+import {getTasksTC} from "./redux/taskReducer";
+import {TaskType, UpdateTaskModelType} from "./api/todolist-api";
 
 
 type PropsType = {
@@ -16,7 +17,7 @@ type PropsType = {
     changeFilter: (todolistId: string, value: FilterValuesType) => void
     addTask: (todolistId: string, title: string) => void
     changeTaskStatus: (todolistId: string, task: TaskType, status: number) => void
-    changeTaskTitle: (todolistId: string, task: TaskType, title: string) => void
+    changeTaskTitle: (todolistId: string, taskId: string, newTitle: string) => void
     changeTodolistTitle: (todolistId: string, title: string) => void
     filter: FilterValuesType
     todolistId: string

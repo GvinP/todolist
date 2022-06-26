@@ -2,11 +2,11 @@ import React, {ChangeEvent, useCallback} from "react";
 import {Checkbox, IconButton, ListItem} from "@material-ui/core";
 import {EditableSpan} from "./EditableSpan";
 import {DeleteOutline} from "@material-ui/icons";
-import {TaskType} from "./redux/taskReducer";
+import {TaskType, UpdateTaskModelType} from "./api/todolist-api";
 
 type TaskPropsType = {
     changeTaskStatus: (todolistId: string, task: TaskType, status: number) => void
-    changeTaskTitle: (todolistId: string, task: TaskType, title: string) => void
+    changeTaskTitle: (todolistId: string, taskId: string, newTitle: string) => void
     removeTask: (todolistId: string, taskId: string) => void
     todolistId: string
     task: TaskType
@@ -27,7 +27,7 @@ export const Task = React.memo((props: TaskPropsType) => {
     }, [props])
     // props.changeTaskStatus, props.todolistId, props.task.id
     const onChangeTaskTitleHandler = useCallback((title: string) => {
-        props.changeTaskTitle(props.todolistId, props.task, title);
+        props.changeTaskTitle(props.todolistId, props.task.id, title);
     }, [props])
     // props.changeTaskTitle, props.todolistId
 
